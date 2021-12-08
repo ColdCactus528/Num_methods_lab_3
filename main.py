@@ -34,6 +34,20 @@ def IntegrationGaussian(min, maximum, step):
 
     return sum(massY)
 
+def AmendmentRungeTM(min, maximum, step):
+    p = 2
+    integral = IntegrationTrapezoidMethod(min, maximum, step)
+    integral2 = IntegrationTrapezoidMethod(min, maximum, step/2)
+
+    return (2**p * integral2 - integral) / (2**p - 1)
+
+def AmendmentRungeSM(min, maximum, step):
+    p = 4
+    integral = IntegrationSimpsonMethod(min, maximum, step)
+    integral2 = IntegrationSimpsonMethod(min, maximum, step/2)
+
+    return (2**p * integral2 - integral) / (2**p - 1)
+
 def LogError(min, maximum, Func):
     step = 0.1
     massErr = []
@@ -52,7 +66,11 @@ min = -1
 maximum = 1
 massX = np.linspace(min, maximum, int((maximum - min) / step))
 massFunc = [FunctionLab3(i) for i in massX]
-massStep, massErr = LogError(min, maximum, IntegrationTrapezoidMethod)
+# massStep, massErr = LogError(min, maximum, IntegrationTrapezoidMethod)
+massStepAR, massErrAR = LogError(min, maximum, AmendmentRungeSM)
+# massStep, massErr = LogError(min, maximum, IntegrationRectangleMethod)
+# massStep, massErr = LogError(min, maximum, IntegrationGaussian)
+massStep, massErr = LogError(min, maximum, IntegrationSimpsonMethod)
 print(str(IntegrationRectangleMethod(min, maximum, step)) + " значение интеграла по методу прямоугольников ")
 print(str(IntegrationSimpsonMethod(min, maximum, step)) + " значение интеграла по методу Симпсона ")
 print(str(IntegrationTrapezoidMethod(min, maximum, step)) + " значение интеграла по методу трапеций ")
@@ -63,5 +81,6 @@ plt.ylabel("y")
 plt.grid()
 # plt.plot(massX, massFunc, label='функция')
 plt.plot(massStep, massErr, label='функция логарифма ошибки')
+plt.plot(massStepAR, massErrAR, label='функция логарифма ошибки с поправкой Рунге')
 plt.legend()
 plt.show()
